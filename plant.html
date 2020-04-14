@@ -9,6 +9,7 @@ style="border:1px solid #000000;">
 <p>
 <textarea id="code" rows="10" cols="100">
 init(400, 500, 0);
+color("#00FF00");
 var a=20;
 function x(d){
   if(d>0){f(d-1);turn(a);sub();sub();x(d-1);esub();turn(-a);x(d-1);esub();turn(-a);f(d-1);sub();turn(-a);f(d-1);x(d-1);esub();turn(a);x(d-1);}
@@ -29,6 +30,7 @@ alert("Done in "+(t1-t0)+" ms");
 <p>sub(): remember the current location and direction. </p>
 <p>esub(): use the previously remembered location and direction. </p>
 <p>init(300,400,0): set starting point at (300, 400), initial direction as upwards.</p>
+<p>color("#00FF00"): set color to green</p>
 <script>
 
   
@@ -73,11 +75,14 @@ alert("Done in "+(t1-t0)+" ms");
 	      pic.curx=v[0];
 	      pic.cury=v[1];
 	      pic.curdir=v[2];
+	  },
+	  color : function(s){
+	      pic.context.strokeStyle=s;
 	  }
       }
       var inputVal=document.getElementById("code").value;
-      Function('"use strict"; return(function(pic, init, fwd, turn, sub, esub ){'+inputVal+'})')()(
-	  pic, pic.init, pic.fwd, pic.turn, pic.sub, pic.esub
+      Function('"use strict"; return(function(pic, init, fwd, turn, sub, esub, color){'+inputVal+'})')()(
+	  pic, pic.init, pic.fwd, pic.turn, pic.sub, pic.esub, pic.color
       );
 }
 </script>
