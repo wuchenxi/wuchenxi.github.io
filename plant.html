@@ -8,32 +8,30 @@ style="border:1px solid #000000;">
 </p>
 <p>
 <textarea id="code" rows="10" cols="100">
-pic.start(400, 500, 0);
-var a=35;
+init(400, 500, 0);
+var a=20;
 function x(d){
-  if(d>0){f(d-1);pic.turn(a);pic.sub();pic.sub();x(d-1);pic.esub();pic.turn(-a);x(d-1);pic.esub();pic.turn(-a);f(d-1);pic.sub();pic.turn(-a);f(d-1);x(d-1);pic.esub();pic.turn(a);x(d-1);}
+  if(d>0){f(d-1);turn(a);sub();sub();x(d-1);esub();turn(-a);x(d-1);esub();turn(-a);f(d-1);sub();turn(-a);f(d-1);x(d-1);esub();turn(a);x(d-1);}
 }
 function f(d){
   if(d>0){f(d-1);f(d-1);}
-  else{pic.mv(2);}
+  else{fwd(3);}
 }
+var t0=performance.now();
 x(6);
+var t1=performance.now();
+alert("Done in "+(t1-t0)+" ms");
 </textarea>
 </p>
 <p><button type="button" onclick="drawCode();">Draw</button><button type="button" onclick="clearcvs();">Clear</button></p>
-<p>pic.mv(20): move ahead 20 pixels.</p>
-<p>pic.turn(30): turn 30 degrees clockwise. </p>
-<p>pic.sub(): remember the current location and direction. </p>
-<p>pic.esub(): use the previously remembered location and direction. </p>
-<p>pic.start(300,400,0): set starting point at (300, 400), initial direction as upwards.</p>
+<p>fwd(20): move ahead 20 pixels.</p>
+<p>turn(30): turn 30 degrees clockwise. </p>
+<p>sub(): remember the current location and direction. </p>
+<p>esub(): use the previously remembered location and direction. </p>
+<p>init(300,400,0): set starting point at (300, 400), initial direction as upwards.</p>
 <script>
 
   
-  function exec(obj, pic){
-      return Function('"use strict"; return(function(pic){'+obj+'})')()(
-	  pic
-      );
-  }
 
   function clearcvs(){
       var cvs=document.getElementById("myCanvas");
@@ -50,12 +48,12 @@ x(6);
 	  cury: 0,
 	  curdir: 0,
 	  stack: [],
-	  start: function(x, y, a){
+	  init : function(x, y, a){
 	      pic.curx=x;
 	      pic.cury=y;
 	      pic.curdir=a*2*Math.PI/360;
 	  },
-	  mv : function(d){
+	  fwd : function(d){
 	      var dx=Math.sin(pic.curdir);
 	      var dy=Math.cos(pic.curdir);
 	      pic.context.moveTo(pic.curx, pic.cury);
@@ -78,7 +76,9 @@ x(6);
 	  }
       }
       var inputVal=document.getElementById("code").value;
-      exec(inputVal, pic);
+      Function('"use strict"; return(function(pic, init, fwd, turn, sub, esub ){'+inputVal+'})')()(
+	  pic, pic.init, pic.fwd, pic.turn, pic.sub, pic.esub
+      );
 }
 </script>
 
