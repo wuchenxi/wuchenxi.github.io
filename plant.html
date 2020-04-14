@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <body>
-
-<canvas id="myCanvas" width="600" height="400"
+<p>
+<canvas id="myCanvas" width="800" height="600"
 style="border:1px solid #000000;">
 </canvas>
+</p>
+<p>
 <textarea id="code" rows="10" cols="100">
-pic.start(300, 400, 0);
-var a=30;
+pic.start(400, 500, 0);
+var a=35;
 function x(d){
   if(d>0){f(d-1);pic.turn(a);pic.sub();pic.sub();x(d-1);pic.esub();pic.turn(-a);x(d-1);pic.esub();pic.turn(-a);f(d-1);pic.sub();pic.turn(-a);f(d-1);x(d-1);pic.esub();pic.turn(a);x(d-1);}
 }
@@ -17,6 +19,7 @@ function f(d){
 }
 x(6);
 </textarea>
+</p>
 <p><button type="button" onclick="drawCode();">Draw</button><button type="button" onclick="clearcvs();">Clear</button></p>
 <p>pic.mv(20): move ahead 20 pixels.</p>
 <p>pic.turn(30): turn 30 degrees clockwise. </p>
