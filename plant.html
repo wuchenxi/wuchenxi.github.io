@@ -8,7 +8,7 @@ style="border:1px solid #000000;">
 </p>
 <p>
   <textarea id="code" rows="10" cols="100">
-    speed(0.1);
+speed(0.1);
 init([0, -400, 0], [0, 1, 0], [1, 0, 0], [0, 0, 1]);
 color("#00FF00");
 var a=20;
@@ -90,6 +90,14 @@ function	esub(){
 
   function clearcvs(){
       doAnim=false;
+      cur=[0,0,0];
+      a1=[0, 1, 0];
+     a2=[1, 0, 0];
+     a3=[0, 0, 1];
+     stack=[];
+      r=[];
+      animspeed=0.1;
+      alert("Cleared!");
       var cvs=document.getElementById("myCanvas");
       var ctx=cvs.getContext("2d");
       ctx.clearRect(0, 0, cvs.width, cvs.height);
