@@ -31,8 +31,62 @@ x(5);
 <p>esub(): use the previously remembered location and directions. </p>
 <p>init(starting_point, a1, a2, a3): set starting point and directions</p>
 <p>color("#00FF00"): set color to green</p>
+<p>speed(0.2): set rotation speed</p>
 <script>
   var doAnim=false;
+  var cur=[0,0,0];
+  var a1=[0, 1, 0];
+  var a2=[1, 0, 0];
+  var a3=[0, 0, 1];
+  var stack=[];
+  var r=[];
+  var animspeed=0.1;
+   function init(pt, i1, i2, i3){
+	      cur=pt;
+	      a1=i1;
+	      a2=i2;
+	      a3=i3;
+	  }
+   function fwd(d){
+	      var next=cur.map((x, i)=>x+a1[i]*d);
+	      r.push([cur, next]);
+	      cur=next;
+   }
+  function turn(d){
+	      var a=d*Math.PI/180;
+	      var s=Math.sin(a);
+	      var c=Math.cos(a);
+	      var na1=a1.map((x, i)=>c*x+s*a2[i]);
+	      var na2=a2.map((x, i)=>c*x-s*a1[i]);
+	      a1=na1;
+	      a2=na2;
+  }
+  function turn2(d){
+	      var a=d*Math.PI/180;
+	      var s=Math.sin(a);
+	      var c=Math.cos(a);
+	      var na2=a2.map((x, i)=>c*x+s*a3[i]);
+	      var na3=a3.map((x, i)=>c*x-s*a2[i]);
+	      a2=na2;
+	      a3=na3;
+  }
+  function sub(){
+	      stack.push([cur, a1, a2, a3]);
+  }
+  function speed(v){
+      animspeed=v;
+  }
+function	esub(){
+	      var v=stack.pop();
+	      cur=v[0];
+	      a1=v[1];
+	      a2=v[2];
+	      a3=v[3];
+	  }
+ function color(s){
+     r.push([s]);
+ }
+
   function clearcvs(){
       doAnim=false;
       var cvs=document.getElementById("myCanvas");
@@ -40,60 +94,9 @@ x(5);
       ctx.clearRect(0, 0, cvs.width, cvs.height);
   }
   function drawCode(){
-      let pic={
-	  cur: [0,0,0],	
-	  a1: [0, 1, 0],
-	  a2: [1, 0, 0],
-	  a3: [0, 0, 1],
-	  stack: [],
-	  r: [],
-	  init: function(pt, a1, a2, a3){
-	      pic.cur=pt;
-	      pic.a1=a1;
-	      pic.a2=a2;
-	      pic.a3=a3;
-	  },
-	  fwd: function(d){
-	      var next=pic.cur.map((x, i)=>x+pic.a1[i]*d);
-	      pic.r.push([pic.cur, next]);
-	      pic.cur=next;
-	  },
-	  turn : function(d){
-	      var a=d*Math.PI/180;
-	      var s=Math.sin(a);
-	      var c=Math.cos(a);
-	      var na1=pic.a1.map((x, i)=>c*x+s*pic.a2[i]);
-	      var na2=pic.a2.map((x, i)=>c*x-s*pic.a1[i]);
-	      pic.a1=na1;
-	      pic.a2=na2;
-	  },
-	  turn2 : function(d){
-	      var a=d*Math.PI/180;
-	      var s=Math.sin(a);
-	      var c=Math.cos(a);
-	      var na2=pic.a2.map((x, i)=>c*x+s*pic.a3[i]);
-	      var na3=pic.a3.map((x, i)=>c*x-s*pic.a2[i]);
-	      pic.a2=na2;
-	      pic.a3=na3;
-	  },
-	  sub : function(){
-	      pic.stack.push([pic.cur, pic.a1, pic.a2, pic.a3]);
-	  },
-	  esub : function(){
-	      var v=pic.stack.pop();
-	      pic.cur=v[0];
-	      pic.a1=v[1];
-	      pic.a2=v[2];
-	      pic.a3=v[3];
-	  },
-	  color : function(s){
-	      pic.r.push([s]);
-	  }
-      };
       var inputVal=document.getElementById("code").value;
-      Function('"use strict"; return(function(init, fwd, turn, turn2, sub, esub, color){'+inputVal+'})')()(
-	  pic.init, pic.fwd, pic.turn, pic.turn2, pic.sub, pic.esub, pic.color
-      );
+      Function('"use strict"; return(function(){'+inputVal+'})')()();
+      alert(r);
       function perspective(v, c, s){
 	  var nv=[c*v[0]-s*v[2], v[1], s*v[0]+c*v[2]];
 	  return [400+nv[0]*400/(800-nv[2]), 400-nv[1]*400/(800-nv[2])];
@@ -105,10 +108,10 @@ x(5);
 	  ctx.beginPath();
 	  ctx.clearRect(0, 0, cvs.width, cvs.height);
 	  var time=new Date();
-	  var r=0.1*time.getSeconds()+0.0001*time.getMilliseconds();
-          var c=Math.cos(r);
-	  var s=Math.sin(r);
-          for(var l of pic.r){
+	  var ang=animspeed*time.getSeconds()+animspeed/1000*time.getMilliseconds();
+          var c=Math.cos(ang);
+	  var s=Math.sin(ang);
+          for(var l of r){
 	     if(l.length==1){
 	       ctx.strokeStyle=l[0];
 	   }
