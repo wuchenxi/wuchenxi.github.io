@@ -10,7 +10,7 @@ style="border:1px solid #000000;">
   <textarea id="code" rows="10" cols="100">
 speed(0.1);
 init([0, -400, 0], [0, 1, 0], [1, 0, 0], [0, 0, 1]);
-color("#00FF00");
+changecolor(0.1);
 var a=20;
 function x(d){
   if(d>0){f(d-1);turn(a);turn2(a);sub();sub();x(d-1);esub();turn(-a);turn2(-a),x(d-1);esub();turn(-a);f(d-1);sub();turn(-a);f(d-1);x(d-1);esub();turn(a);x(d-1);}
@@ -33,6 +33,7 @@ x(5);
 <p>init([0, -400, 0], [0, 1, 0], [1, 0, 0], [0, 0, 1]): set starting point at (0, -400, 0), a1 axis upwards.</p>
 <p>color("#00FF00"): set color to green</p>
 <p>speed(0.2): set rotation speed</p>
+<p>changecolor(0.2): default color changes with speed 0.2 on the color wheel</p>
 <p>Example code:</p>
 <p>speed(1);for(var i=0;i<500;i++){fwd(50);turn(10);turn2(10/(i+1));}</p>
 <script>
@@ -42,6 +43,7 @@ x(5);
   var a2=[1, 0, 0];
   var a3=[0, 0, 1];
   var stack=[];
+  var changeColor=0;
   var r=[];
   var animspeed=0.1;
    function init(pt, i1, i2, i3){
@@ -90,6 +92,10 @@ function	esub(){
      r.push([s]);
  }
 
+  function changecolor(s){
+      changeColor=s;
+  }
+  
   function clearcvs(){
       doAnim=false;
       cur=[0,0,0];
@@ -99,6 +105,7 @@ function	esub(){
      stack=[];
       r=[];
       animspeed=0.1;
+      changeColor=0;
       alert("Cleared!");
       var cvs=document.getElementById("myCanvas");
       var ctx=cvs.getContext("2d");
@@ -119,7 +126,17 @@ function	esub(){
 	  ctx.beginPath();
 	  ctx.clearRect(0, 0, cvs.width, cvs.height);
 	  var time=new Date();
-	  var ang=animspeed*time.getSeconds()+animspeed/1000*time.getMilliseconds();
+	  var ang=animspeed/1000*time.getTime();
+	  if(changeColor>0){
+	      var an=ang*changeColor/animspeed;
+	      var red=Math.floor(127+Math.sin(an)*127);
+	      var green=Math.floor(127+Math.sin(an+2*Math.PI/3)*127);
+	      var blue=Math.floor(127+Math.sin(an+4*Math.PI/3)*127);
+	      ctx.strokeStyle=("rgb("+red+","+green+","+blue+")");
+	  }
+	  else{
+	      ctx.strokeStyle="#FFFFFF";
+	  }
           var c=Math.cos(ang);
 	  var s=Math.sin(ang);
           for(var l of r){
