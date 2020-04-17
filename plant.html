@@ -114,7 +114,6 @@ function	esub(){
   function drawCode(){
       var inputVal=document.getElementById("code").value;
       Function('"use strict"; return(function(){'+inputVal+'})')()();
-//      alert(r);
       function perspective(v, c, s){
 	  var nv=[c*v[0]-s*v[2], v[1], s*v[0]+c*v[2]];
 	  return [400+nv[0]*400/(800-nv[2]), 400-nv[1]*400/(800-nv[2])];
@@ -135,7 +134,7 @@ function	esub(){
 	      ctx.strokeStyle=("rgb("+red+","+green+","+blue+")");
 	  }
 	  else{
-	      ctx.strokeStyle="#FFFFFF";
+	      ctx.strokeStyle="#000000";
 	  }
           var c=Math.cos(ang);
 	  var s=Math.sin(ang);
