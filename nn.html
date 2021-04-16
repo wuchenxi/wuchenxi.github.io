@@ -3,9 +3,9 @@
 <body>
 <p>
 <textarea id="code" rows="10" cols="100">
-m.reset([1,8,4,2,1], 0.01);
+m.reset([1,4,2,1], 0.005);
 var i;
-for(i=0;i<50;i++){
+for(i=0;i<500;i++){
   var x=Math.random()*2;
   m.train([x], [Math.sin(x)]);
 }
