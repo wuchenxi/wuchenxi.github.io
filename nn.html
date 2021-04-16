@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>
+<textarea id="code" rows="10" cols="100">
+m.reset([1,8,4,2,1], 0.005);
+var i;
+for(i=0;i<5000;i++){
+  var x=Math.random()*2;
+  m.train([x], [Math.sin(x)]);
+}
+return m.test([1]);
+</textarea>
+</p>
+<p><button type="button" onclick="evalCode();">Evaluate</button><button type="button" onclick="printModel();">Print Model</button></p>
+<p>
+<textarea id="answer" rows="10" cols="100">
+</textarea>
+</p>
+<script>
+  function gauss_bm() {
+    var u = 0, v = 0;
+    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while(v === 0) v = Math.random();
+    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+  }
+  var m={
+      model : 0,
+      shape : 0,
+      lr : 0.1,
+      reset : function(lens, lr){
+	  this.lr=lr;
+	  this.shape=lens;
+	  this.model=Array(lens.length-1);
+	  var i;
+	  for(i=0;i<lens.length-1;i++){
+    	      this.model[i]=Array(lens[i+1]).fill(Array(lens[i]+1));
+	      var j, k;
+	      for(j=0;j<lens[i+1];j++){
+		  for(k=0;k<lens[i]+1;k++){
+		      this.model[i][j][k]=gauss_bm();
+		  }
+	      }
+	  }
+      },
+
+      eval : function(data){
+	  r=Array(this.shape.length);
+	  r[0]=data;
+	  var i;
+	  for(i=1;i<this.shape.length;i++){
+	      var res=Array(this.shape[i]);
+	      var j;
+	      for(j=0;j<this.shape[i];j++){
+		  var s=this.model[i-1][j][0];
+		  var k;
+		  for(k=0;k<this.shape[i-1];k++){
+		      s=s+this.model[i-1][j][k+1]*r[i-1][k];
+		  }
+		  if(s<0){
+		      s=0;
+		  }
+		  res[j]=s;
+	      }
+	      r[i]=res;
+	  }
+	  return r;
+      },
+
+      train : function(true_x, true_y){
+	  eval_r=this.eval(true_x)
+	  depth=this.shape.length;
+	  grads=Array(depth-1);
+	  grads[depth-2]=Array(this.shape[depth-1]);
+	  var i;
+	  for(i=0;i<this.shape[depth-1];i++){
+	      grads[depth-2][i]=true_y[i]-eval_r[depth-1][i];
+	  }
+	  for(i=depth-3;i>=0;i--){
+	      grads[i]=Array(this.shape[i+1]);
+	      var j;
+	      for(j=0;j<this.shape[i+1];j++){
+		  s=0;
+		  var k;
+		  for(k=0;k<this.shape[i+2];k++){
+		      s=s+this.model[i+1][k][j+1]*grads[i+1][k];
+		  }
+		  if(eval_r[i+1][j]==0){
+		      s=0;
+		  }
+		  grads[i][j]=s;
+	      }
+	  }
+	  for(i=0;i<depth-1;i++){
+	      var j;
+	      for(j=0;j<this.shape[i+1];j++){
+		  this.model[i][j][0]=this.model[i][j][0]+grads[i][j]*this.lr;
+		  var k;
+		  for(k=1;k<this.shape[i]+1;k++){
+		      this.model[i][j][k]=this,model[i][j][k]+grads[i][j]*eval_r[i][k-1]*this.lr;
+		  }
+	      }
+	  }
+      },
+
+      test : function(x){
+	  return this.eval(x)[this.shape.length-1];
+      }
+  };
+  function evalCode(){
+      var inputVal=document.getElementById("code").value;
+      res=Function('"use strict"; return(function(){'+inputVal+'})')()();
+      document.getElementById("answer").value=res;
+  }
+  function printModel(){
+      document.getElementById("answer").value=m.model.toString();
+  }
+</script>
+
+</body>
+</html>
