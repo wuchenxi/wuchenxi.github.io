@@ -1,3 +1,5 @@
+#Usage: py google_scrap.py out.csv
+
 from GoogleNews import GoogleNews
 import sys
 googlenews=GoogleNews(lang='en', period='7d', encode='utf-8')
@@ -9,10 +11,7 @@ print(len(r))
 
 fn=sys.argv[1]
 output=open(fn, "w")
-print("<!DOCTYPE html>\n<html>\n<body>\n", file=output)
 for item in r:
-    print("<p>"+item['date']+" <a href=\""+item['link']+"\">"+item['title']+"</a> "+item['media']+"</p>", file=output)
-    print("<p>"+item['desc']+"</p>", file=output)
-print("</body>\n</html>", file=output)
+    print("\""+item['date']+"\",=HYPERLINK(\""+item['link']+"\"),\""+item['title']+"\",\""+item['media']+"\",\""+item['desc']+"\"", file=output)
 output.close()
 
