@@ -2,8 +2,10 @@ from GoogleNews import GoogleNews
 import sys
 googlenews=GoogleNews(lang='en', period='7d', encode='utf-8')
 googlenews.search("Asian American")
-googlenews.get_page(10)
+for i in range(2, 11):
+    googlenews.get_page(i)
 r=googlenews.results(sort=True)
+print(len(r))
 
 fn=sys.argv[1]
 output=open(fn, "w")
