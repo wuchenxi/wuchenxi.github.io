@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>
+<canvas id="myCanvas" width="800" height="800"
+style="border:1px solid #000000;">
+</canvas>
+</p>
+<p>
+  <textarea id="code" rows="10" cols="100">
+sub();color("#FF0000");for(var i=0;i<60;i++){fwd(15);turn(10-i*1.3);}
+esub();color("#00FF00");for(var i=0;i<60;i++){fwd(15);turn(-10+i*1.3);}
+</textarea>
+</p>
+<p><button type="button" onclick="drawCode();">Draw</button><button type="button" onclick="clearcvs();">Clear</button></p>
+<p>Turtle Graphics in JavaScript</p>
+<p>fwd(20): move along a1 axis for 20 units.</p>
+<p>turn(30): turn 30 degrees counterclockwise. </p>
+<p>sub(): remember the current location and directions. </p>
+<p>esub(): use the previously remembered location and directions. </p>
+<p>init([0, 0], [0, 1]): set starting point at (0, 0), direction upwards.</p>
+<script>
+  var doAnim=false;
+  var cur=[0,0];
+  var a1=[0, 1];
+  var stack=[];
+  var changeColor=0;
+  var r=[];
+   function init(pt, i1){
+	      cur=pt;
+	      a1=i1;
+	  }
+   function fwd(d){
+	      var next=cur.map((x, i)=>x+a1[i]*d);
+       r.push([cur, next]);
+	      cur=next;
+   }
+  function turn(d){
+	      var a=d*Math.PI/180;
+	      var s=Math.sin(a);
+	      var c=Math.cos(a);
+	      var nx=c*a1[0]-s*a1[1];
+	      var nv=s*a1[0]+c*a1[1];
+	      a1=[nx, nv];
+  }
+  function sub(){
+	      stack.push([cur, a1]);
+  }
+  function esub(){
+	      var v=stack.pop();
+	      cur=v[0];
+	      a1=v[1];
+	  }
+   function color(s){
+     r.push([s]);
+   }
+  
+  function clearcvs(){
+      doAnim=false;
+      cur=[0,0];
+      a1=[0, 1];
+     stack=[];
+      r=[];
+      alert("Cleared!");
+      var cvs=document.getElementById("myCanvas");
+      var ctx=cvs.getContext("2d");
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+  }
+  function drawCode(){
+      var inputVal=document.getElementById("code").value;
+      Function('"use strict"; return(function(){'+inputVal+'})')()();
+      var cvs=document.getElementById("myCanvas");
+      var ctx=cvs.getContext("2d");
+	  ctx.beginPath();
+	  ctx.clearRect(0, 0, cvs.width, cvs.height);
+      ctx.strokeStyle="#000000";
+      for(var l of r){
+      if(l.length==1){
+           ctx.beginPath();
+	       ctx.strokeStyle=l[0];
+	   }
+	   else{
+	      var p1=[l[0][0]+400, 400-l[0][1]];
+	      var p2=[l[1][0]+400, 400-l[1][1]];
+	      ctx.moveTo(p1[0], p1[1]);
+	      ctx.lineTo(p2[0], p2[1]);
+	      ctx.stroke();
+	      }
+	  }
+ }
+</script>
+
+</body>
+</html>
