@@ -1,0 +1,73 @@
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
+#include <complex>
+
+int sz=1000;
+const int E[]={1,-1};
+const int m=2;
+int count=0;
+
+std::complex<double> get_z(int x, int y){
+  return std::complex<double>(((double)x)/sz*2-1, ((double)y)/sz*2-1);
+}
+
+int main(){
+  char* buf=(char*)malloc(sz*sz);
+  for(int i=0;i<sz*sz;i++)buf[i]=0;
+  double beta, x, y;
+    double lam=sqrt(3);
+
+  FILE* out=fopen("ts2.pbm","w");
+  fprintf(out, "P1\n%d %d\n", sz, sz);
+  int n=16;
+
+    int w0[n];
+    double xx=1;
+    for(int i=0;i<n;i++){
+      if(xx>1/lam){w0[i]=1;xx=2-xx*lam;}
+      else {w0[i]=0;xx*=lam;}
+    }
+    int S[n];
+    S[0]=1;
+    for(int i=1;i<n;i++)
+      S[i]=S[i-1]*E[w0[i-1]];
+
+
+  for(int ycor=0;ycor<sz;ycor++)
+      for(int xcor=0;xcor<sz;xcor++){
+	std::complex<double> z=get_z(xcor, ycor);
+	int tested=0;
+        if(abs(z)<1&&abs(z)>0.5){
+    long B=1;
+    for(int i=0;i<n-1;i++)B*=(long)m;
+    int w[n];
+   
+    for(long i=0;i<B;i++){
+      if(tested==1)break;
+      w[0]=m-1;
+      long N=i;
+      for(int j=1;j<n;j++){
+	w[j]=N%m;N=(N-N%m)/m;
+      }
+      int flag=0;
+     for(int j=0;j<n;j++){
+       if(S[j]*(w0[j]-w[j])>0)break;
+	  else if(S[j]*(w0[j]-w[j])<0){flag=1;break;}
+	}
+     if(flag)continue;
+     std::complex<double> x=1.0;
+     for(int j=n-1;j>=0;j--){
+       if(w[j]==1)x=(std::complex<double>(2,0)-x)/z;
+       else x/=z;
+     }
+       if(abs(x)*(1-abs(z))<2)tested=1;
+    }
+	}
+    if(xcor==sz-1)fprintf(out,"%d\n", tested);
+    else fprintf(out,"%d ",tested);
+      }
+  
+  fclose(out);
+  return 0;
+}
