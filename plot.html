@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="myCanvas" width="400" height="400"
+style="border:1px solid #000000;">
+</canvas>
+<p>
+  <textarea id="code" rows="10" cols="100">
+{11-point star}
+11,100,200@;;
+[
+  ,200>;
+  ,20,7/(;{pi is approximated by 22/7}
+  ,0.,1-,0:!
+]
+  </textarea>
+</p>
+<p><button type="button" onclick="execCode(false);">Run</button> | <button type="button" onclick="execCode(true);">Run step-by-step</button></p>
+<p>
+<div id="output">
+</div>
+</p>
+<script>
+  function exec(src, stk, sp, pp, output, steps){
+    var paths=[];
+    var dir=0;
+    var pos=[200,200];
+    while(pp<src.length){
+      var ch=src[pp];
+      var skip=false;
+      if(ch<='9' && ch>='0'){
+        stk[sp]=stk[sp]*10+ch.charCodeAt(0)-"0".charCodeAt(0);
+      }
+      else{
+        switch(ch){
+          case ',':
+            sp++;
+            stk[sp]=0;
+          break;
+          case ';':
+            sp--;
+          break;
+          case '~':
+            stk[sp]*=-1;
+          break;
+          case '+':
+            sp--;
+            stk[sp]+=stk[sp+1];
+          break;
+          case '-':
+            sp--;
+            stk[sp]-=stk[sp+1];
+          break;
+          case '*':
+            sp--;
+            stk[sp]*=stk[sp+1];
+          break;
+          case '/':
+            sp--;
+            stk[sp]/=stk[sp+1];
+          break;
+          case '%':
+            sp--;
+            stk[sp]%=stk[sp+1];
+          break;
+          case '|':
+            if(stk[sp]<0){
+              stk[sp]*=-1;
+            }
+          break;
+          case '!':
+            if(stk[sp]==0){
+              stk[sp]=1;
+            }
+            else{
+              stk[sp]=0;
+            }
+          break;
+          case '.':
+            stk[sp]=stk[stk[sp]];
+          break;
+          case ':':
+            sp--;
+            stk[stk[sp+1]]=stk[sp];
+          break;
+          case '^':
+            var nsp=sp+stk[sp]-1;
+            for(var i=sp;i<=nsp;i++){
+              stk[i]=stk[sp-1];
+            }
+            sp=nsp;
+          break;
+          case '[':
+            sp++;
+            stk[sp]=pp;
+          break;
+          case ']':
+            if(stk[sp]==0){
+              sp--;
+              pp=stk[sp];
+            }
+            else{
+              sp--;
+              stk[sp]=stk[sp+1];
+            }
+          break;
+          case '@':
+             pos[0]=stk[sp-1];
+             pos[1]=stk[sp];
+          break;
+          case '(':
+             dir+=stk[sp];
+          break;
+          case '>':
+             var npos=[pos[0]+Math.cos(dir)*stk[sp], pos[1]+Math.sin(dir)*stk[sp]];
+             paths.push([pos, npos]);
+             pos=npos;
+          break;
+          case '{':
+             while(src[pp]!="}"){
+               pp++;
+             }
+          default:
+            skip=true
+          break;
+        }
+      }
+      if(steps && skip==false){
+        var out=pp+":"+src[pp]+" {"+stk[0].toString();
+        for(var i=1;i<=sp;i++){
+          out+=",";
+          out+=stk[i].toString();
+        }
+        output.innerText+=out+"}\n";
+      }
+      pp+=1;
+    }
+    return paths;
+  }
+
+  function execCode(step){
+      var src=document.getElementById("code").value;
+      var stack=new Array(102400).fill(0);
+      document.getElementById("output").innerText="";
+      var graph=exec(src, stack, 0, 0, document.getElementById("output"), step);
+      var cvs=document.getElementById("myCanvas");
+      var ctx=cvs.getContext("2d");
+	  ctx.beginPath();
+	  ctx.clearRect(0, 0, cvs.width, cvs.height);
+      ctx.strokeStyle="#000000";
+      for(var l of graph){
+	      ctx.moveTo(l[0][0], l[0][1]);
+	      ctx.lineTo(l[1][0], l[1][1]);
+	      ctx.stroke();
+	  }
+ }
+</script>
+
+<p>Calculation is carried out on a sequence of numbers, starting at {0}. Each command is a single character. All characters not associated with a command are skipped.</p>
+
+<p>0..9: {...,a}->{...,a*10+i}, where i is 0..9</p>
+<p>, {...}->{...,0}</p>
+<p>; {...,a}->{...}</p>
+<p>~ {...,a}->{...,-a}</p>
+<p>+ {...,a,b}->{...,a+b}</p>
+<p>- {...,a,b}->{...,a-b}</p>
+<p>* {...,a,b}->{...,a*b}</p>
+<p>/ {...,a,b}->{...,a/b}</p>
+<p>% {...,a,b}->{...,a%b}</p>
+<p>| {...,a}->{...,|a|}</p>
+<p>! {...,a}->{...,a'}, where a' is 0 if a is non-zero and 1 if a is zero.</p>
+<p>. {...,a}->{...,a'}, where a' is the a-th entry in the sequence.</p>
+<p>: {...,b,a}->{...,b}, and the a-the entry in the sequence is replaced with b.</p>
+<p>[ {...}->{...,p}, where p is the current location of the program.</p>
+<p>] {...,p,a}->{...,p} and goes to the location p, if a=0; ->{...,a} if a is not 0.</p>
+<p>@ {...,x,y}->{...,x,y} move to location (x, y), without changing direction.</p>
+<p>( {...,a}->{...,a} turn counterclockwise by a.</p>
+<p>> {...,a}->{...,a} move forward by a.</p>
+<p>{...} comments</p>
+</body>
+</html>
