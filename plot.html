@@ -8,7 +8,7 @@ style="border:1px solid #000000;">
   <textarea id="code" rows="10" cols="100">
 {11-point star}
 11,100,200@;;
-[
+,1[
   ,200>;
   ,20,7/(;{pi is approximated by 22/7}
   ,0.,1-,0:!
@@ -91,8 +91,22 @@ style="border:1px solid #000000;">
             sp=nsp;
           break;
           case '[':
-            sp++;
-            stk[sp]=pp;
+            if(stk[sp]==0){
+              var count=1;
+              while(count>0){
+                pp++;
+                if(src[pp]=="["){
+                   count++;
+                }
+                else{
+                   count--;
+                }
+              }
+            }
+            else{
+              sp++;
+              stk[sp]=pp;
+            }
           break;
           case ']':
             if(stk[sp]==0){
@@ -172,7 +186,7 @@ style="border:1px solid #000000;">
 <p>. {...,a}->{...,a'}, where a' is the a-th entry in the sequence.</p>
 <p>: {...,b,a}->{...,b}, and the a-the entry in the sequence is replaced with b.</p>
 <p>^ {...,a,b}->{...,a,a...,a} replace b with b copies of a.</p>
-<p>[ {...}->{...,p}, where p is the current location of the program.</p>
+<p>[ {...,a}->{...,p} if a is non zero. Here p is the current location of the program. Otherwise skip to the matching "]".</p>
 <p>] {...,p,a}->{...,p} and goes to the location p, if a=0; ->{...,a} if a is not 0.</p>
 <p>@ {...,x,y}->{...,x,y} move to location (x, y), without changing direction.</p>
 <p>( {...,a}->{...,a} turn counterclockwise by a.</p>
