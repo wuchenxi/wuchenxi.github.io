@@ -5,7 +5,7 @@
   <textarea id="code" rows="10" cols="100">
 {Print Fibonaccci Sequences}
 1,0,10
-[
+,1[
   ,0.>,1.+
   ,0.,1:;
   ,0:;
@@ -86,8 +86,22 @@
             sp=nsp;
           break;
           case '[':
-            sp++;
-            stk[sp]=pp;
+            if(stk[sp]==0){
+              var count=1;
+              while(count>0){
+                pp++;
+                if(src[pp]=="["){
+                   count++;
+                }
+                else if(src[pp]=="]"){
+                   count--;
+                }
+              }
+            }
+            else{
+              
+              stk[sp]=pp;
+            }
           break;
           case ']':
             if(stk[sp]==0){
@@ -147,7 +161,8 @@
 <p>! {...,a}->{...,a'}, where a' is 0 if a is non-zero and 1 if a is zero.</p>
 <p>. {...,a}->{...,a'}, where a' is the a-th entry in the sequence.</p>
 <p>: {...,b,a}->{...,b}, and the a-the entry in the sequence is replaced with b.</p>
-<p>[ {...}->{...,p}, where p is the current location of the program.</p>
+<p>^ {...,a,b}->{...,a,a...,a} replace b with b copies of a.</p>
+<p>[ {...,a}->{...,p} if a is non zero. Here p is the current location of the program. Otherwise skip to the matching "]".</p>
 <p>] {...,p,a}->{...,p} and goes to the location p, if a=0; ->{...,a} if a is not 0.</p>
 <p>> {...,a}->{...,a} print out the number a.</p>
 <p>{...} comments</p>
