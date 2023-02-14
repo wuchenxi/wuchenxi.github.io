@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="myCanvas" width="400" height="400"
+style="border:1px solid #000000;">
+</canvas>
+<p>
+  <textarea id="code" rows="5" cols="100">
+  </textarea>
+</p>
+<p><button type="button" onclick="execCode(false);">Paint</button></p>
+<p>
+</p>
+<script>
+  function cadd(z, w){
+    return [z[0]+w[0], z[1]+w[1]];
+  }
+  function csub(z, w){
+    return [z[0]-w[0], z[1]-w[1]];
+  }
+  function cmul(z, w){
+    return [z[0]*w[0]-z[1]*w[1], z[0]*w[1]+z[1]*w[0]];
+  }
+  function cnorm(z){
+    return z[0]*z[0]+z[1]*z[1];
+  }
+  function cdiv(z, w){
+    var r=cmul(z, [w[0], -w[1]]);
+    var n=cnorm(w);
+    return [r[0]/n, r[1]/n];
+  }
+
+
+  function test(x, y){
+    var z=[x, y];
+    z=cmul(z, [2, 0]);
+    for(let i=0;i<20;i++){
+      z=cadd(cmul(z, z), [1/4, 0]);
+      if(cnorm(z)>1000){
+        return 0;
+      }
+    }
+    return 1;
+  }
+
+  
+  function execCode(){
+      var cvs=document.getElementById("myCanvas");
+      var ctx=cvs.getContext("2d");
+	  ctx.clearRect(0, 0, cvs.width, cvs.height);
+      ctx.fillStyle="#000000";
+for(let i=0;i<400;i++){
+  for(let j=0;j<400;j++){
+    var x=(i-200)/200;
+    var y=(200-j)/200;
+    if(test(x, y)>0){
+      ctx.fillRect(i, j, 1, 1);
+    }
+  }
+}
+  }
+</script>
+
+</body>
+</html>
