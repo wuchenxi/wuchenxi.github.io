@@ -107,6 +107,9 @@ z*z*(z-0.1)-0.83*i-0.1
 	  var r=parse(src.slice(1));
 	  return [r[0], r[1].slice(1)];
       }
+      else{
+          return ["[0,0]", src];
+      }
   }
   
   function execCode(){
