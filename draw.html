@@ -6,6 +6,8 @@ style="border:1px solid #000000;">
 </canvas>
 <p>
   <textarea id="code" rows="5" cols="100">
+//z->z*z*z-0.83I
+return csub(cmul(cmul(z, z), z), [0, 0.83]);
   </textarea>
 </p>
 <p><button type="button" onclick="execCode(false);">Paint</button></p>
@@ -31,12 +33,11 @@ style="border:1px solid #000000;">
   }
 
 
-  function test(x, y){
+  function test(x, y, fun){
     var z=[x, y];
-    z=cmul(z, [2, 0]);
-    for(let i=0;i<20;i++){
-      z=cadd(cmul(z, z), [1/4, 0]);
-      if(cnorm(z)>1000){
+    for(let i=0;i<40;i++){
+	z=fun(z);
+      if(cnorm(z)>10000){
         return 0;
       }
     }
@@ -45,15 +46,17 @@ style="border:1px solid #000000;">
 
   
   function execCode(){
+      var src=document.getElementById("code").value;
+      var fun=Function('"use strict"; return(function(z){'+src+'})')();
       var cvs=document.getElementById("myCanvas");
       var ctx=cvs.getContext("2d");
 	  ctx.clearRect(0, 0, cvs.width, cvs.height);
-      ctx.fillStyle="#000000";
+      ctx.fillStyle="#40F000";
 for(let i=0;i<400;i++){
   for(let j=0;j<400;j++){
-    var x=(i-200)/200;
-    var y=(200-j)/200;
-    if(test(x, y)>0){
+    var x=(i-200)/100;
+    var y=(200-j)/100;
+      if(test(x, y, fun)>0){
       ctx.fillRect(i, j, 1, 1);
     }
   }
