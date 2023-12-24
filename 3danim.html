@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>
+<canvas id="myCanvas" width="600" height="600"
+style="border:1px solid #000000; background-color:#000000;">
+</canvas> 
+</p>
+<p>
+  <textarea id="code" rows="10" cols="100">
+    var c=cos(time/10000);
+    var s=sin(time/10000);
+    function rot(v){
+      return [v[0], c*v[1]-s*v[2], s*v[1]+c*v[2]];
+    }
+    var vpre=[];
+    for(var i=0;i<100;i+=0.1){
+	  var vnxt=[(40+10*cos(19*i/11))*cos(i), (40+10*cos(19*i/11))*sin(i), 10*sin(19*i/11)];
+	  if(vpre.length>0){
+              line(rot(vpre), rot(vnxt));
+          }
+          vpre=vnxt;
+      }
+ return [];
+</textarea>
+</p>
+<p><button type="button" onclick="drawCode();">Draw</button><button type="button" onclick="clearcvs();">Clear</button></p>
+<script>
+  var doAnim=false;
+  var animspeed=0.1;
+  var r=[];
+  var lines=[];
+  var points=[];
+  function line(v0, v1){
+      lines.push([v0, v1]);
+  }
+  function points(v){
+      points.push(v);
+  }
+  function cos(x){
+      return Math.cos(x);
+  }
+  function sin(x){
+      return Math.sin(x);
+  }
+  function exp(x){
+      return Math.exp(x);
+  }
+  function log(x){
+      return Math.log(x);
+  }
+  function clearcvs(){
+      doAnim=false;
+      r=[];
+      lines=[];
+      points=[];
+      animspeed=0.1;
+      var frame=0;
+      alert("Cleared!");
+      var cvs=document.getElementById("myCanvas");
+      var ctx=cvs.getContext("2d");
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+  }
+  function drawCode(){
+      var inputVal=document.getElementById("code").value;
+      var frame=Function('"use strict"; return(function(data, time){'+inputVal+'})')();
+      doAnim=true;
+      function draw_frame(){
+	  function perspective(v){
+	      return [300+v[0]*300/(100-v[2]), 300-v[1]*300/(100-v[2])];
+	  }
+          var cvs=document.getElementById("myCanvas");
+          var ctx=cvs.getContext("2d");
+	  ctx.beginPath();
+	  ctx.fillStyle="black";
+	  ctx.fillRect(0, 0, cvs.width, cvs.height);
+	  lines=[];
+	  points=[];
+	  var time=new Date();
+	  r=frame(r, time.getTime());
+	  ctx.strokeStyle="#FFFFFF";
+	  for(var l of lines){
+	      var p1=perspective(l[0]);
+	      var p2=perspective(l[1]);
+	      ctx.moveTo(p1[0], p1[1]);
+	      ctx.lineTo(p2[0], p2[1]);
+	      ctx.stroke();
+	  }
+	  if(doAnim)
+	        window.requestAnimationFrame(draw_frame);
+
+      }
+      window.requestAnimationFrame(draw_frame);
+ }
+</script>
+
+</body>
+</html>
