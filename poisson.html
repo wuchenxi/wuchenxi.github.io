@@ -1,0 +1,50 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src=https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.8.1/math.min.js></script>
+</head>
+<h1>Poisson Approximation of Binomial Distribution</h1>
+<body>
+<p>N: <input type="text" id="n" value="10"></p>
+<p>lambda: <input type="text" id="lambda" value="4"></p>
+<p><button type="button" onclick="plotPMF();">Plot PMF</button></p>
+<canvas id="myCanvas" width="500" height="500"
+style="border:1px solid #000000;">
+</canvas>
+<script>
+  function plotPMF(){
+      var n=parseInt(document.getElementById("n").value);
+      var lam=parseFloat(document.getElementById("lambda").value);
+      var cvs=document.getElementById("myCanvas");
+      var ctx=cvs.getContext("2d");
+	  ctx.clearRect(0, 0, cvs.width, cvs.height);
+	  ctx.beginPath();
+      ctx.strokeStyle="#0000FF";
+      function line(a, b, c, d){
+         ctx.moveTo(a, b);
+         ctx.lineTo(c, d);
+         ctx.stroke();
+      }
+      for(let i=0;i<20;i++){
+        var x=i*25+2;
+        var cp=0;
+        if(i<=n){
+          cp=math.combinations(n, i)*Math.pow(lam/n, i)*Math.pow(1-lam/n, n-i);
+        }
+        line(x, 500, x, 500-500*cp);
+      }
+      ctx.strokeStyle="#FF0000";
+      ctx.beginPath();
+      for(let i=0;i<20;i++){
+        var x=i*25+4;
+        var cp=Math.pow(lam, i)/math.factorial(i)*Math.exp(-lam);
+        line(x, 500, x, 500-500*cp);
+      }
+  }
+
+
+</script>
+
+</body>
+</html>
